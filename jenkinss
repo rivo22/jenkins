@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'Branch', defaultValue: 'master', description: 'Git Branch to Build')
+        booleanParam(name: 'BuildImage', defaultValue: true, description: 'Should we build a Docker image?')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git "https://github.com/your-repo-url.git"
+            }
+        }
+
+        stage('Build Docker Image') {
+            when {
+                expression { params.BuildImage }
+            }
+            steps {
+                script {
+                    docker.build("my-image")
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying to ${params.Branch}"
+            }
+        }
+    }
+}
